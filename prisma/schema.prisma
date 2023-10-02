@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  email  String  @unique
+  hash   String
+  avatar String?
+
+  firstName String?
+  lastName  String?
+
+  History      History[]
+  RefreshToken RefreshToken[]
+
+  @@map("users")
+}
+
+model Exercise {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  name        String
+  series      String
+  repetitions String
+  group       String
+  demo        String
+  thumb       String
+
+  History History[]
+
+  @@map("exercises")
+}
+
+model History {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  user_id     User     @relation(fields: [userId], references: [id])
+  exercise_id Exercise @relation(fields: [exerciseId], references: [id])
+  userId      Int
+  exerciseId  Int
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  expires_in    Int
+  refresh_token String
+
+  user_id User @relation(fields: [userId], references: [id])
+  userId  Int
+}
